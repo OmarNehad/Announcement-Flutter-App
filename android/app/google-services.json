@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "471588938946",
+    "firebase_url": "https://obs-clone-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "obs-clone",
+    "storage_bucket": "obs-clone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471588938946:android:e496dcbb419924abe5c75b",
+        "android_client_info": {
+          "package_name": "com.me.obsClone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "471588938946-l2qhvf5r7b4dqjfqh8h7nni1roav6o2o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCg2Nn4dB6uRNoptshHpcMgdFAsQyETrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "471588938946-l2qhvf5r7b4dqjfqh8h7nni1roav6o2o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
