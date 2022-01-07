@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:obs_clone/screens/create_announcements_screen.dart';
+import './screens/create_announcements_screen.dart';
 import './screens/creat_user_screen.dart';
 import '/screens/auth_screen.dart';
 import 'screens/home_screen.dart';

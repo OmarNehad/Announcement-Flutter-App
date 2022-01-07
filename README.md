@@ -1,4 +1,4 @@
-# obs_clone
+# announcement_app
 
 A new Flutter project.
 

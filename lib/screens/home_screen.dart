@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:obs_clone/screens/create_announcements_screen.dart';
-import 'package:obs_clone/widgets/announcement.dart';
+import '../screens/create_announcements_screen.dart';
+import '../widgets/announcement.dart';
 import '/screens/creat_user_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -67,16 +67,25 @@ class HomeScreen extends StatelessWidget {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
+                } else if (snapshot.hasError) {
+                  print("Error is+${snapshot.error} ");
                 }
                 List<QueryDocumentSnapshot<Map<String, dynamic>>> data =
                     snapshot.data!.docs;
-                return ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (_, index) {
-                      return Announcement(data[index]);
-                    });
+                if (data.isNotEmpty) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      shrinkWrap: true,
+                      itemCount: data.length,
+                      itemBuilder: (_, index) {
+                        return Announcement(data[index]);
+                      });
+                } else {
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text("No Announcemnts are made for your Group yet"),
+                  );
+                }
               }),
           const Divider(),
           FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -86,16 +95,25 @@ class HomeScreen extends StatelessWidget {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
+                } else if (snapshot.hasError) {
+                  print("Error is+${snapshot.error} ");
                 }
                 List<QueryDocumentSnapshot<Map<String, dynamic>>> data =
                     snapshot.data!.docs;
-                return ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (_, index) {
-                      return Announcement(data[index]);
-                    });
+                if (data.isNotEmpty) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      shrinkWrap: true,
+                      itemCount: data.length,
+                      itemBuilder: (_, index) {
+                        return Announcement(data[index]);
+                      });
+                } else {
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text("No Announcemnts are made for you yet"),
+                  );
+                }
               }),
         ],
       ),

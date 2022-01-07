@@ -1,6 +1,6 @@
 {
-    "name": "obs_clone",
-    "short_name": "obs_clone",
+    "name": "announcement_app",
+    "short_name": "announcement_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

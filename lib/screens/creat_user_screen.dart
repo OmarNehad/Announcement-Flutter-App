@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:obs_clone/widgets/adjust_form.dart';
+import '../widgets/adjust_form.dart';
 
 class CreatUserScreen extends StatefulWidget {
   const CreatUserScreen({Key? key}) : super(key: key);
