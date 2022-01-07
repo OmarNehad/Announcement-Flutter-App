@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.announcement_app">
+    package="com.example.obs_clone">
    <application
-        android:label="announcement_app"
+        android:label="obs_clone"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

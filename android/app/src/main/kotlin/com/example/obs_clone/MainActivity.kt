@@ -1,4 +1,4 @@
-package com.example.announcement_app
+package com.example.obs_clone
 
 import io.flutter.embedding.android.FlutterActivity
 
