@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # announcement_app
+=======
+# Announcemtn App
+>>>>>>> ba5d190bca8f574d3c32dc0c04a0064dfb80f294
 
 A new Flutter project.
 
