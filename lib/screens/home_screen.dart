@@ -19,12 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<QuerySnapshot<Map<String, dynamic>>> get announs {
     return widget._userRole > 0
         ? FirebaseFirestore.instance
-            .collection("announcement")
+            .collection("announcements")
             .orderBy("targetDate", descending: true)
             .orderBy("urgency")
             .get()
         : FirebaseFirestore.instance
-            .collection("announcement")
+            .collection("announcements")
             .where("targetGroups",
                 isEqualTo: FirebaseAuth.instance.currentUser!.uid)
             .orderBy("targetDate")
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
                         future: FirebaseFirestore.instance
-                            .collection("announcement")
+                            .collection("announcements")
                             .where("targetGroups",
                                 arrayContains:
                                     widget._userGrade ?? widget._userRole)
@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return const Padding(
                               padding: EdgeInsets.all(20),
                               child: Text(
-                                "No Announcemnts are made for your group yet! \n \n Pull to refresh",
+                                "No Announcemnts are made for your group yet! Pull to refresh",
                                 textAlign: TextAlign.center,
                               ),
                             );
@@ -169,8 +169,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.all(20),
                                 child: Text(
                                   widget._userRole > 0
-                                      ? "No Announcemnts are made by you yet\n \n Pull to refeesh"
-                                      : "No Announcemnts are made for you yet\n \n pull to refresh",
+                                      ? "No Announcemnts are made by you yet, Pull to refresh"
+                                      : "No Announcemnts are made for you yet, Pull to refresh",
                                   textAlign: TextAlign.center,
                                 ),
                               );
