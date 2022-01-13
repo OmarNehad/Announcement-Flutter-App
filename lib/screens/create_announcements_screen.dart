@@ -39,7 +39,7 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
       final user = FirebaseAuth.instance.currentUser!;
       final _donwloadUrl = await uploadFile();
 
-      await FirebaseFirestore.instance.collection('announcement').add({
+      await FirebaseFirestore.instance.collection('announcements').add({
         'title': _title,
         'message': _message,
         'targetGroups': [..._targetGroups, ..._targetUsers],
