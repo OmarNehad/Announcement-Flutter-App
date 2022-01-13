@@ -1,4 +1,4 @@
 
 # Announcemtn App
 
-A flutter app for managing announcements across an organization level.
+A flutter app for managing announcements across an organization.
