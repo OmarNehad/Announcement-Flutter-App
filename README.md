@@ -1,5 +1,5 @@
 
-# Announcemtn App
+# Announcements App
 
 A flutter app for managing announcements across an organization.
 * sample Manager Account: test@gmail.com, pass:testPass22@@
