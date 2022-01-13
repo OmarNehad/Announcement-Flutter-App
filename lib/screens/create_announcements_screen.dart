@@ -8,7 +8,6 @@ import '../utils/date_form_field.dart';
 import '../widgets/adjust_form.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../utils/firebase_api.dart';
 import 'package:path/path.dart';
@@ -24,8 +23,9 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
   final _formKey = GlobalKey<FormState>();
   var _message = '';
   var _title = '';
-  late DateTime _targetDate;
-  List<int> _targetGroups = [];
+  late DateTime _targetDate = DateTime.now();
+  List _targetGroups = [];
+  List _targetUsers = [];
   var _urgency = 2;
   var _isLoading = false;
   UploadTask? task;
@@ -38,12 +38,11 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
       });
       final user = FirebaseAuth.instance.currentUser!;
       final _donwloadUrl = await uploadFile();
-      print('Download-Link: $_donwloadUrl');
 
       await FirebaseFirestore.instance.collection('announcement').add({
         'title': _title,
         'message': _message,
-        'targetGroups': _targetGroups,
+        'targetGroups': [..._targetGroups, ..._targetUsers],
         'creationTime': DateTime.now(),
         'targetDate': _targetDate,
         'userId': user.uid,
@@ -55,21 +54,22 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
           context: this.context,
           builder: (BuildContext cntx) {
             return AlertDialog(
-              title: const Icon(Icons.done),
+              title: const Text("Success"),
               actions: <Widget>[
                 TextButton(
                     onPressed: () {
+                      Navigator.of(cntx).pop();
                       Navigator.of(cntx).pop();
                     },
                     child: const Text('Close')),
               ],
             );
           });
-    } on FirebaseException catch (e) {
-      var message = 'An error occurred, pelase check your credentials!';
-      if (e.message != null) {
-        message = e.message!;
-      }
+    } on Exception catch (e) {
+      var message = 'An error occurred';
+
+      message = e.toString();
+
       showDialog(
           context: this.context,
           builder: (BuildContext cntx) {
@@ -100,202 +100,233 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
       appBar: AppBar(
         title: const Text("Add an anouncment"),
       ),
-      body: AdjustForm(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    label: Text("Message"),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 10) {
-                      return "Please enter no less than 8";
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _message = value!;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    label: Text("Title"),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 10) {
-                      return "Please enter no less than 8";
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _title = value!;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                MultiSelectFormField(
-                  title: const Text("Groups List"),
-                  chipBackGroundColor: Theme.of(context).colorScheme.primary,
-                  chipLabelStyle: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                  dialogTextStyle: const TextStyle(fontWeight: FontWeight.bold),
-                  checkBoxActiveColor: Theme.of(context).colorScheme.primary,
-                  checkBoxCheckColor: Colors.blue,
-                  validator: (value) {
-                    if (_targetGroups.isEmpty) {
-                      return 'Please select one or more options';
-                    }
-                    return null;
-                  },
-                  dataSource: [
-                    'Managers',
-                    'Teachers',
-                    'Grade 06',
-                    'Grade 07',
-                    'Grade 08',
-                    'Grade 09',
-                    'Grade 10',
-                    'Grade 11',
-                    'Grade 12',
-                  ].mapIndexed((index, grade) {
-                    return {
-                      "display": grade,
-                      "value": grade.contains("Grade")
-                          ? int.parse(grade.substring(grade.length - 2))
-                          : index,
-                    };
-                  }).toList(),
-                  textField: 'display',
-                  valueField: 'value',
-                  okButtonLabel: 'OK',
-                  cancelButtonLabel: 'CANCEL',
-                  hintWidget: const Text('Please choose one or more'),
-                  initialValue: _targetGroups,
-                  onSaved: (value) {
-                    _targetGroups = [...value];
-                  },
-                ),
-                FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                    future:
-                        FirebaseFirestore.instance.collection("users").get(),
-                    builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      List<QueryDocumentSnapshot<Map<String, dynamic>>> data =
-                          snapshot.data!.docs;
-
-                      return MultiSelectFormField(
-                        title: const Text("Students List"),
-                        chipBackGroundColor:
-                            Theme.of(context).colorScheme.primary,
-                        chipLabelStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
-                        dialogTextStyle:
-                            const TextStyle(fontWeight: FontWeight.bold),
-                        checkBoxActiveColor:
-                            Theme.of(context).colorScheme.primary,
-                        checkBoxCheckColor: Colors.white,
-                        validator: (value) {
-                          if (_targetGroups.isEmpty) {
-                            return 'Please select one or more options';
-                          }
-                          return null;
-                        },
-                        dataSource: data.mapIndexed((index, grade) {
-                          return {
-                            "display": data[index]['email'],
-                            "value": data[index].id,
-                          };
-                        }).toList(),
-                        textField: 'display',
-                        valueField: 'value',
-                        okButtonLabel: 'OK',
-                        cancelButtonLabel: 'CANCEL',
-                        hintWidget: const Text('Please choose one or more'),
-                        initialValue: _targetGroups,
-                        onSaved: (value) {
-                          _targetGroups = [...value];
-                        },
-                      );
-                    }),
-                DateTimeFormField(
-                  lastDate: DateTime.now().add(const Duration(days: 120)),
-                  onSaved: (value) {
-                    _targetDate = value!;
-                  },
-                ),
-                DropdownButtonFormField<int>(
-                  value: _urgency,
-                  items: ['Urgent', 'Important', 'Normal']
-                      .mapIndexed((index, value) {
-                    return DropdownMenuItem<int>(
-                      value: index,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _urgency = value!;
-                    });
-                  },
-                  onSaved: (value) {
-                    _urgency = value!;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        fileName,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: selectFile,
-                      icon: const Icon(
-                        Icons.attach_file,
-                      ),
-                    ),
-                    task != null
-                        ? Row(children: [
-                            Text("Uploading doucucment $fileName"),
-                            buildUploadStatus(task!)
-                          ])
-                        : Container(),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                if (!_isLoading)
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate() && file != null) {
-                        _formKey.currentState!.save();
-                        _createAnouncment();
-                      }
-                    },
-                    child: const Text("Create Announcment"),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blueGrey[900],
-                    ),
-                  ),
-                if (_isLoading) const CircularProgressIndicator(),
-              ],
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            "Create a new Announcment",
+            style: TextStyle(
+              fontSize: 22,
             ),
           ),
-        ),
+          Expanded(
+            child: AdjustForm(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        label: Text("Title"),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length < 10) {
+                          return "Please enter no less than 8";
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _title = value!;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        label: Text("Message"),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length < 10) {
+                          return "Please enter no less than 8";
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _message = value!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    MultiSelectFormField(
+                      title: const Text("Groups List"),
+                      chipBackGroundColor:
+                          Theme.of(context).colorScheme.primary,
+                      chipLabelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                      dialogTextStyle:
+                          const TextStyle(fontWeight: FontWeight.bold),
+                      checkBoxActiveColor:
+                          Theme.of(context).colorScheme.primary,
+                      checkBoxCheckColor: Colors.white,
+                      validator: (value) {
+                        if (_targetGroups.isEmpty && _targetUsers.isEmpty) {
+                          return 'Please select one or more Group/Users';
+                        }
+                        return null;
+                      },
+                      dataSource: [
+                        'Teachers',
+                        'Managers',
+                        'Grade 06',
+                        'Grade 07',
+                        'Grade 08',
+                        'Grade 09',
+                        'Grade 10',
+                        'Grade 11',
+                        'Grade 12',
+                      ].mapIndexed((index, grade) {
+                        return {
+                          "display": grade,
+                          "value": grade.contains("Grade")
+                              ? int.parse(grade.substring(grade.length - 2))
+                              : index + 2
+                        };
+                      }).toList(),
+                      textField: 'display',
+                      valueField: 'value',
+                      okButtonLabel: 'OK',
+                      cancelButtonLabel: 'CANCEL',
+                      hintWidget: const Text('Please choose one or more'),
+                      initialValue: _targetGroups,
+                      onSaved: (value) {
+                        _targetGroups = [...value];
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        future: FirebaseFirestore.instance
+                            .collection("users")
+                            .where("role", isGreaterThan: 0)
+                            .get(),
+                        builder: (_, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                              data = snapshot.data!.docs;
+
+                          return MultiSelectFormField(
+                            title: const Text("Students List"),
+                            chipBackGroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            chipLabelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                            dialogTextStyle:
+                                const TextStyle(fontWeight: FontWeight.bold),
+                            checkBoxActiveColor:
+                                Theme.of(context).colorScheme.primary,
+                            checkBoxCheckColor: Colors.white,
+                            initialValue: _targetUsers,
+                            validator: (value) {
+                              if (_targetGroups.isEmpty &&
+                                  _targetUsers.isEmpty) {
+                                return 'Please select one or more Group/Users';
+                              }
+                              return null;
+                            },
+                            dataSource: data.mapIndexed((index, grade) {
+                              return {
+                                "display": data[index]['email'],
+                                "value": data[index].id,
+                              };
+                            }).toList(),
+                            textField: 'display',
+                            valueField: 'value',
+                            okButtonLabel: 'OK',
+                            cancelButtonLabel: 'CANCEL',
+                            hintWidget: const Text('Please choose one or more'),
+                            onSaved: (value) {
+                              _targetUsers = [...value];
+                            },
+                          );
+                        }),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    DateTimeFormField(
+                      lastDate: DateTime.now().add(const Duration(days: 120)),
+                      validator: (value) {
+                        if (!_targetDate.isAfter(DateTime.now())) {
+                          return 'Please select a Date in the future';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _targetDate = value!;
+                      },
+                    ),
+                    DropdownButtonFormField<int>(
+                      value: _urgency,
+                      items: ['Urgent', 'Important', 'Normal']
+                          .mapIndexed((index, value) {
+                        return DropdownMenuItem<int>(
+                          value: index,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        _urgency = value!;
+                      },
+                      onSaved: (value) {
+                        _urgency = value!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            fileName,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: selectFile,
+                          icon: const Icon(
+                            Icons.attach_file,
+                          ),
+                        ),
+                        task != null ? buildUploadStatus(task!) : Container(),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (!_isLoading)
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            _createAnouncment();
+                          }
+                        },
+                        child: const Text("Create Announcment"),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blueGrey[900],
+                        ),
+                      ),
+                    if (_isLoading) const CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -307,7 +338,8 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
     setState(() => file = File(result.files.single.path!));
   }
 
-  Future<String> uploadFile() async {
+  Future<String?> uploadFile() async {
+    if (file == null) return null;
     final fileName = basename(file!.path);
     final destination = 'files/$fileName';
 
@@ -317,9 +349,9 @@ class _CreateAnnouncementState extends State<CreateAnnouncement> {
     if (task == null) return "failed";
 
     final snapshot = await task!.whenComplete(() {});
-    final urlDownload = await snapshot.ref.getDownloadURL();
-
-    return urlDownload;
+    return snapshot.ref.name;
+    //final urlDownload = await snapshot.ref.getDownloadURL();
+    //return urlDownload;
   }
 
   Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(

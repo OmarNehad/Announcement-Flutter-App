@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+//import 'package:ext_storage/ext_storage.dart';
 
 class FirebaseApi {
   static UploadTask? uploadFile(String destination, File file) {
@@ -9,20 +9,16 @@ class FirebaseApi {
       final ref = FirebaseStorage.instance.ref(destination);
 
       return ref.putFile(file);
-    } on FirebaseException catch (e) {
-      print(e);
+    } on FirebaseException catch (_) {
       return null;
     }
   }
 
-  static UploadTask? uploadBytes(String destination, Uint8List data) {
-    try {
-      final ref = FirebaseStorage.instance.ref(destination);
+  static Future downloadFile(Reference ref) async {
+    var dir = await getExternalStorageDirectory();
 
-      return ref.putData(data);
-    } on FirebaseException catch (e) {
-      print(e);
-      return null;
-    }
+    final file = File('${dir!.path}/${ref.name}');
+
+    await ref.writeToFile(file);
   }
 }

@@ -1,60 +1,98 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:math';
+import 'package:obs_clone/utils/firebase_api.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
-class Announcement extends StatefulWidget {
+class Announcement extends StatelessWidget {
   final QueryDocumentSnapshot<Map<String, dynamic>> item;
   const Announcement(this.item, {Key? key}) : super(key: key);
+  void _buildAnnouns(BuildContext cntx) {
+    showDialog(
+        context: cntx,
+        builder: (BuildContext cntx) {
+          return AlertDialog(
+            title: Text(item['title']),
+            content: Column(
+              children: [
+                Text(
+                  item['message'],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                if (item["attachedFile"] != null)
+                  InkWell(
+                    onTap: () async {
+                      ScaffoldMessenger.of(cntx).showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 1),
+                        content: Text('Downloading ${item['attachedFile']}...'),
+                      ));
+                      await FirebaseApi.downloadFile(FirebaseStorage.instance
+                          .ref('files/' + item['attachedFile']));
 
-  @override
-  State<Announcement> createState() => _AnnouncementState();
-}
-
-class _AnnouncementState extends State<Announcement> {
-  var _expanded = false;
+                      ScaffoldMessenger.of(cntx).showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 1),
+                        content: Text('Downloaded ${item['attachedFile']}'),
+                      ));
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(Icons.download),
+                        Text(item['attachedFile']),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            actionsPadding: EdgeInsets.zero,
+            scrollable: true,
+            actions: <Widget>[
+              Text(
+                "Announced by ${item["username"]} at ${DateFormat.yMd().add_jm().format(item["targetDate"].toDate())}",
+                style: const TextStyle(color: Colors.grey),
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(cntx).pop();
+                  },
+                  child: const Text('OK')),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      // height: _expanded
-      //     ? min(/*widget.order.products.length*/ 2 * 20.0 + 110, 200)
-      //     : 95,
-      child: Card(
-        margin: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            ListTile(
+    return Card(
+      margin: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          InkWell(
+            child: ListTile(
               // leading: const Align(
               //   alignment: Alignment.center,
               //   child: Text('username'),
-              // ),
-              leading: Text(widget.item['username']),
-              title: Text('${widget.item['title']}'),
-              subtitle: Text(
-                  "Announced at ${widget.item['targetDate'].toDate().day}-${widget.item['targetDate'].toDate().month}-${widget.item['targetDate'].toDate().year} at ${widget.item['targetDate'].toDate().hour}:${widget.item['targetDate'].toDate().minute}"),
-              trailing: IconButton(
-                icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-                onPressed: () {
-                  setState(() {
-                    _expanded = !_expanded;
-                  });
-                },
+              //
+              // ,
+              leading: SvgPicture.network(
+                "https://avatars.dicebear.com/api/initials/${item["username"].toString().split(' ').join()}.svg",
+                placeholderBuilder: (BuildContext context) =>
+                    const CircularProgressIndicator(),
               ),
+              title: Text('${item['title']}'),
+              subtitle: Text(
+                "by ${item["username"]} at ${DateFormat.yMd().add_jm().format(item["targetDate"].toDate())}",
+              ),
+              trailing: const Icon(Icons.navigate_next_sharp),
+              onTap: () {
+                _buildAnnouns(context);
+              },
             ),
-            AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-                height: _expanded
-                    ? min(/*widget.message.length*/ 2 * 20.0 + 10, 100)
-                    : 0,
-                child: Text(
-                  widget.item['message'],
-                ))
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -7,15 +7,13 @@ class AdjustForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
       child: Card(
         color: Theme.of(context).colorScheme.secondary,
         margin: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: child,
-          ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: child,
         ),
       ),
     );
