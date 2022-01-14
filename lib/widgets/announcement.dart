@@ -71,11 +71,6 @@ class Announcement extends StatelessWidget {
         children: <Widget>[
           InkWell(
             child: ListTile(
-              // leading: const Align(
-              //   alignment: Alignment.center,
-              //   child: Text('username'),
-              //
-              // ,
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: Image.network(
@@ -90,7 +85,20 @@ class Announcement extends StatelessWidget {
               subtitle: Text(
                 "by ${item["username"]} at ${DateFormat.yMd().add_jm().format(item["targetDate"].toDate())}",
               ),
-              trailing: const Icon(Icons.navigate_next_sharp),
+              trailing: item["urgency"] == 2
+                  ? const Icon(
+                      Icons.warning,
+                      color: Colors.red,
+                    )
+                  : item["urgency"] == 1
+                      ? Icon(
+                          Icons.announcement,
+                          color: Colors.yellow[700],
+                        )
+                      : const Icon(
+                          Icons.comment,
+                          color: Colors.green,
+                        ),
               onTap: () {
                 _buildAnnouns(context);
               },

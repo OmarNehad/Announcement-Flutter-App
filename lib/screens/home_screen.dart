@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             text: widget._userRole > 0
                                 ? "Announcements for you"
                                 : " Class Announcements",
-                            icon: const Icon(Icons.announcement)),
+                            icon: const Icon(Icons.mail)),
                         Tab(
                             text: widget._userRole > 0
                                 ? "Announcements by you"
