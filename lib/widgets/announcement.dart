@@ -2,7 +2,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:obs_clone/utils/firebase_api.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class Announcement extends StatelessWidget {
@@ -77,10 +76,15 @@ class Announcement extends StatelessWidget {
               //   child: Text('username'),
               //
               // ,
-              leading: SvgPicture.network(
-                "https://avatars.dicebear.com/api/initials/${item["username"].toString().split(' ').join()}.svg",
-                placeholderBuilder: (BuildContext context) =>
-                    const CircularProgressIndicator(),
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image.network(
+                    "https://ui-avatars.com/api/?name=${item["username"]}&background=random",
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const CircularProgressIndicator();
+                }),
               ),
               title: Text('${item['title']}'),
               subtitle: Text(
