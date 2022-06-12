@@ -1,7 +1,7 @@
 
 # Announcements App
 
-A flutter app for managing announcements across a School.
+A Demo firebase flutter app for managing announcements across a school. 
 > tested on andorid stimulator.
 * sample Manager Account: test@gmail.com, pass:testPass22@@
 * sample Grade 10 Student Account: test2@gmail.com, pass:testPass22@@
