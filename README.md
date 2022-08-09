@@ -1,10 +1,11 @@
 
 # Announcements App
 
-A Demo firebase flutter app for managing announcements across a school. 
+A Demo firebase flutter app for managing announcements across an organization. 
+* The app has the following screens:
 > tested on andorid stimulator.
-* sample Manager Account: test@gmail.com, pass:testPass22@@
-* sample Grade 10 Student Account: test2@gmail.com, pass:testPass22@@
+* Sample Manager Account: test@gmail.com, pass:testPass22@@
+* Sample Grade 10 Student Account: test2@gmail.com, pass:testPass22@@
 # in app screenshots
 <span>
 <img src="https://user-images.githubusercontent.com/52573189/149411815-ce74068d-d0db-46e6-9025-056ba51178ae.png" width="30%">
