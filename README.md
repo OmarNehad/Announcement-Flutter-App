@@ -2,7 +2,11 @@
 # Announcements App
 
 A Demo firebase flutter app for managing announcements across an organization. 
-* The app has the following screens:
+The app has the following screens:
+* login
+* Create User
+* Create Announcement
+* Home page: content depends on the user type
 > tested on andorid stimulator.
 * Sample Manager Account: test@gmail.com, pass:testPass22@@
 * Sample Grade 10 Student Account: test2@gmail.com, pass:testPass22@@
