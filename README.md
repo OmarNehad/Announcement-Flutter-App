@@ -1,7 +1,7 @@
 
 # Announcements App
 
-A Demo firebase flutter app for managing announcements across an organization. 
+A Demo firebase flutter app for managing announcements across across an organization. 
 The app has the following screens:
 * login
 * Create User
